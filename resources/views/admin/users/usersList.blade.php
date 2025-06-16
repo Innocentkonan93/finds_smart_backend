@@ -229,6 +229,10 @@
                                         <option value="client">Client</option>
                                     </select>
                                 </div>
+                                <div class="mb-20">
+                                    <label for="depart" class="form-label fw-semibold text-primary-light text-sm mb-8">Mot de passe<span class="text-danger-600">*</span> </label>
+                                    <p>Le mot de passe par défaut pour un nouvel utilisateur est : 123456</p>
+                                </div>
                                 <div class="modal-footer justify-content-center gap-3">
                                     <button type="button" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-50 py-11 radius-8" data-bs-dismiss="modal">
                                         Annuler

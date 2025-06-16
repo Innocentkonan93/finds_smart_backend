@@ -51,7 +51,7 @@ class UsersController extends Controller
             'email' => 'required|email|unique:users,email',
             'user_type' => 'required|in:client,professional',
             'image_path' => 'nullable|image|max:2048',  // Image optionnelle, taille max 2 Mo
-            'phone_number' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date',
@@ -118,10 +118,11 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
 
         // Hacher le mot de passe
-        $validatedData['is_deleted'] = true;
-        $validatedData['is_active'] = false;
+        $user->is_deleted = true;
+        $user->is_active = false;
+        $user->save();
         // Créer l'utilisateur avec les données validées
-        $user->update($validatedData);
+        $user->delete();
 
         return redirect()->route('usersList')->with('success', 'Utilisateur supprimé avec succès.');
     }

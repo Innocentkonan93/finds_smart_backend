@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pack;
 use App\Models\Service;
+use App\Http\Requests\StorePackRequest;
+use App\Http\Requests\UpdatePackRequest;
+
 class PacksController extends Controller
 {
     //
@@ -26,16 +29,34 @@ class PacksController extends Controller
         return view('admin.packs.addPack');
     }
 
-    public function storePack(Request $request)
+    public function storePack(StorePackRequest $request)
     {
-        $pack = Pack::create($request->all());
+        $validated = $request->validated();
+        if(!$validated){
+            return redirect()->route('packsList')->with('error', 'Erreur lors de la création du pack');
+        }
+        
+        $validated['highlight'] = $request->highlight ? true : false;
+        
+        if($validated['highlight']) {
+            Pack::where('type', $validated['type'])
+                ->where('highlight', 1)
+                ->update(['highlight' => false]);
+        }
+        
+        $pack = Pack::create($validated);
         return redirect()->route('packsList')->with('success', 'Pack créé avec succès');
     }
 
-    public function updatePack(Request $request, $id)
+    public function updatePack(UpdatePackRequest $request, $id)
     {
         $pack = Pack::find($id);
-        $pack->update($request->all());
+        $validated = $request->validated();
+
+        if(!$validated){
+            return redirect()->route('packsList')->with('error', 'Erreur lors de la mise à jour du pack');
+        }
+        $pack->update($validated);
         return redirect()->route('packsList')->with('success', 'Pack mis à jour avec succès');
     }
 

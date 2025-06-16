@@ -49,56 +49,30 @@
             <div class="pb-24 ms-16 mb-24 me-16  mt--100">
          
                 <div class="mt-24">
-                    <h6 class="text-xl mb-16">Informations de la commande</h6>
+                    <h6 class="text-xl mb-16">Informations de la transaction</h6>
                     <ul>
-                      
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Titre</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $order->service->title }}</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light"> Référence</span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $transaction->reference }}</span>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Catégorie</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $order->service->category ? $order->service->category->name : 'Aucune catégorie' }}</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light"> Montant </span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ number_format($transaction->amount, 0, ',', ' ') }} FCFA</span>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Prix</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ number_format($order->total_price, 0, ',', ' ') }} FCFA</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light"> Canal </span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $transaction->channel }}</span>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Date de début</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $order->start_date ? \Carbon\Carbon::parse($order->start_date)->format('d M Y') : '' }}</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light"> Statut </span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $transaction->status }}</span>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Ville</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $order->city }}</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light"> Client </span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $transaction->user->name }}</span>
                         </li>
-                        <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> District</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $order->district }}</span>
-                        </li> 
-                        <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Statut</span>
-                            @switch($order->status)
-                            @case('pending')
-                                <span class="bg-warning-focus text-warning-600 border border-warning-main px-24 py-4 radius-4 fw-medium text-sm">En attente</span>
-                                @break
-                            @case('accepted') 
-                                <span class="bg-success-focus text-success-600 border border-success-main px-24 py-4 radius-4 fw-medium text-sm">Acceptée</span>
-                                @break
-                            @case('completed')
-                                <span class="bg-info-focus text-info-600 border border-info-main px-24 py-4 radius-4 fw-medium text-sm">Terminée</span>
-                                @break
-                            @case('canceled')
-                                <span class="bg-danger-focus text-danger-600 border border-danger-main px-24 py-4 radius-4 fw-medium text-sm">Annulée</span>
-                                @break
-                            @default
-                                <span class="bg-neutral-focus text-neutral-600 border border-neutral-main px-24 py-4 radius-4 fw-medium text-sm">{{ $order->status }}</span>
-                        @endswitch
-                        </li>
-                        
                     </ul>
-
-                    <p class="text-secondary-light mt-24"> Créé le: {{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') }}</p>
+                    <p class="text-secondary-light mt-24"> Créé le: {{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') }}</p>
                 </div>
             </div>
         </div>
@@ -109,12 +83,12 @@
                 <ul class="nav border-gradient-tab nav-pills mb-20 d-inline-flex" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link d-flex align-items-center px-24 active" id="pills-edit-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-edit-profile" type="button" role="tab" aria-controls="pills-edit-profile" aria-selected="true">
-                            Modifier la commande
+                            Détails de la transaction
                         </button>
                     </li>
                      
                 </ul>
-                <form action="{{ route('updateOrder', $order->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('updateTransaction', $transaction->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     @if ($errors->any())
@@ -138,57 +112,32 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="mb-20">
-                                            <label for="name" class="form-label fw-semibold text-primary-light text-sm mb-8"> Titre de la commande <span class="text-danger-600">*</span></label>
-                                            <input type="text" name="name" class="form-control radius-8" id="name" placeholder="Entrez le titre de la commande" value="{{ $order->title }}">
+                                            <label for="name" class="form-label fw-semibold text-primary-light text-sm mb-8"> Référence de la transaction </label>
+                                            <input readonly type="text" name="reference" class="form-control radius-8" id="reference" placeholder="Entrez la référence de la transaction" value="{{ $transaction->reference }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="mb-20">
-                                            <label for="email" class="form-label fw-semibold text-primary-light text-sm mb-8">Description <span class="text-danger-600">*</span></label>
-                                            <textarea type="text" name="description" rows="1" class="form-control radius-8" id="description" placeholder="Entrez la description" value="{{ $order->description }}">{{ $order->description }}</textarea>
+                                            <label for="name" class="form-label fw-semibold text-primary-light text-sm mb-8"> Montant de la transaction </label>
+                                            <input readonly type="number" name="amount" class="form-control radius-8" id="amount" placeholder="Entrez le montant de la transaction" value="{{ $transaction->amount }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="mb-20">
-                                            <label for="number" class="form-label fw-semibold text-primary-light text-sm mb-8">Prix</label>
-                                            <input type="number" name="budget" class="form-control radius-8" id="number" placeholder="Entrez le prix" value="{{ $order->total_price }}">
+                                            <label for="name" class="form-label fw-semibold text-primary-light text-sm mb-8"> Canal de la transaction </label>
+                                            <input readonly type="text" name="channel" class="form-control radius-8" id="channel" placeholder="Entrez le canal de la transaction" value="{{ $transaction->channel }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="mb-20">
-                                            <label for="number" class="form-label fw-semibold text-primary-light text-sm mb-8">Date de début</label>
-                                            <input type="date" name="start_date" class="form-control radius-8" id="start_date" placeholder="Entrez la date de début" value="{{ old('start_date', $order->start_date ? \Carbon\Carbon::parse($order->start_date)->format('Y-m-d') : '') }}">
+                                            <label for="name" class="form-label fw-semibold text-primary-light text-sm mb-8"> Statut de la transaction </label>
+                                            <input readonly type="text" name="status" class="form-control radius-8" id="status" placeholder="Entrez le statut de la transaction" value="{{ $transaction->status }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="mb-20">
-                                            <label for="number" class="form-label fw-semibold text-primary-light text-sm mb-8">Ville</label>
-                                            <input type="text" name="city" class="form-control radius-8" id="number" placeholder="Entrez la ville" value="{{ $order->city }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="number" class="form-label fw-semibold text-primary-light text-sm mb-8">District</label>
-                                            <input type="text" name="district" class="form-control radius-8" id="number" placeholder="Entrez le district" value="{{ $order->district }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="desig" class="form-label fw-semibold text-primary-light text-sm mb-8">Statut <span class="text-danger-600">*</span> </label>
-                                            <select class="form-control radius-8 form-select" id="status" name="status">
-                                                <option value="accepted" {{ $order->status == 'accepted' ? 'selected' : '' }}>Accepté</option>
-                                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>En attente</option>
-                                                <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Terminée</option>
-                                                <option value="cancelled" {{ $order->status == 'canceled' ? 'selected' : '' }}>Annulé</option>
-                                            </select>
-
-                                            {{-- <div class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                                <label for="companzNew" class="position-absolute w-100 h-100 start-0 top-0"></label>
-                                                <div class="d-flex align-items-center gap-3 justify-content-between">
-                                                    <span class="form-check-label line-height-1 fw-medium text-secondary-light">{{ $user->is_active == 1 ? 'Désactiver' : 'Activer' }}</span>
-                                                    <input class="form-check-input" type="checkbox" role="switch" id="companzNew">
-                                                </div>
-                                            </div> --}}
+                                            <label for="name" class="form-label fw-semibold text-primary-light text-sm mb-8"> Client </label>
+                                            <input readonly type="text" name="user_id" class="form-control radius-8" id="user_id" placeholder="Entrez le client" value="{{ $transaction->user->name }}">
                                         </div>
                                     </div>
                                 </div>
@@ -196,9 +145,6 @@
                                     <a href="{{ route('ordersList') }}" class="btn btn-secondary border border-secondary-600 text-md px-56 py-12 radius-8">
                                         Retour
                                     </a>
-                                    <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
-                                        Enregistrer
-                                    </button>
                                 </div>
                             </div>
                         </div>
